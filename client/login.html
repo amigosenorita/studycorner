@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Study Corner CRM</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 flex items-center justify-center min-h-screen relative overflow-hidden px-4">
+    <!-- Background Decoration -->
+    <div class="absolute top-0 left-0 w-96 h-96 bg-blue-500 rounded-full blur-3xl opacity-20 -ml-48 -mt-48"></div>
+    <div class="absolute bottom-0 right-0 w-96 h-96 bg-indigo-500 rounded-full blur-3xl opacity-20 -mr-48 -mb-48"></div>
+
+    <div class="bg-white/95 backdrop-blur-lg p-10 rounded-3xl shadow-2xl w-full max-w-md border border-white/20 relative z-10 transform hover:scale-[1.01] transition-all duration-300">
+        <div class="text-center mb-10">
+            <div class="inline-flex items-center justify-center w-20 h-20 bg-blue-600 rounded-2xl mb-6 shadow-lg shadow-blue-500/30">
+                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+            </div>
+            <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight">CRM Secure Access</h2>
+            <p class="text-blue-600 font-semibold text-sm mt-2 uppercase tracking-widest">Authorized Personnel Only</p>
+        </div>
+
+        <div id="loginError" class="hidden text-red-600 text-sm mb-6 text-center bg-red-50 p-4 rounded-xl border border-red-100 shadow-sm animate-pulse"></div>
+
+        <form id="loginForm" class="space-y-6">
+            <div class="space-y-2">
+                <label class="block text-gray-700 text-sm font-bold ml-1">Email Address</label>
+                <input type="email" id="email" required
+                    placeholder="name@studycorner.in"
+                    class="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all duration-200 text-gray-800 shadow-sm">
+            </div>
+            <div class="space-y-2">
+                <label class="block text-gray-700 text-sm font-bold ml-1">Secret Password</label>
+                <input type="password" id="password" required
+                    placeholder="••••••••"
+                    class="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all duration-200 text-gray-800 shadow-sm">
+            </div>
+            
+            <div class="pt-2">
+                <button type="submit"
+                    class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold py-4 px-6 rounded-2xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-xl shadow-blue-500/25 active:scale-95">
+                    Sign In to Workspace
+                </button>
+            </div>
+        </form>
+        
+        <div class="mt-8 pt-8 border-t border-gray-100 text-center">
+            <p class="text-xs text-gray-400 font-medium tracking-wide">
+                STUDY CORNER EDUCATIONAL SERVICES <br>
+                CLOUD-DRIVEN PARTNER NETWORK
+            </p>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+<script src="js/chatbot.js"></script>
+</body>
+
+</html>

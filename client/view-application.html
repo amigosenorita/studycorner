@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Application - Admission CRM</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @page {
+            size: A4;
+            margin: 15mm;
+        }
+
+        @media print {
+            .no-print {
+                display: none;
+            }
+
+            body {
+                background: white;
+                padding: 0;
+                margin: 0;
+            }
+
+            .print-container {
+                box-shadow: none !important;
+                border: none !important;
+                width: 100% !important;
+                max-width: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            /* Compress vertical spaces and paddings to fit 1 page */
+            .p-10 { padding: 1rem !important; }
+            .p-6 { padding: 0.75rem !important; }
+            .space-y-8 > :not([hidden]) ~ :not([hidden]) { margin-top: 1rem !important; }
+            .space-y-4 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.25rem !important; }
+            .gap-8 { gap: 1rem !important; }
+            .text-sm { font-size: 0.75rem !important; line-height: 1rem !important; }
+            .text-lg { font-size: 0.875rem !important; }
+            .pb-6 { padding-bottom: 0.5rem !important; }
+            .mt-12 { margin-top: 1rem !important; }
+            .pt-8 { padding-top: 0.5rem !important; }
+            
+            .passport-photo {
+                width: 100px !important;
+                height: 120px !important;
+            }
+
+            /* Ensure colors and backgrounds render correctly on PDF and print */
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
+
+        .passport-photo {
+            width: 150px;
+            height: 180px;
+            object-fit: cover;
+            border: 2px solid #ddd;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 p-8">
+
+    <div class="max-w-4xl mx-auto bg-white shadow-2xl rounded-3xl overflow-hidden print-container border border-gray-100 mt-4 mb-4">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-blue-900 to-indigo-900 p-8 text-white flex justify-between items-center relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32"></div>
+            <div class="relative z-10">
+                <h1 class="text-4xl font-extrabold tracking-tight">STUDY CORNER</h1>
+                <p class="text-blue-200 font-medium tracking-widest uppercase text-xs mt-1">Official Admission Application Portal</p>
+            </div>
+            <div class="no-print relative z-10 flex gap-4">
+                <button onclick="window.print()"
+                    class="bg-white text-blue-900 px-6 py-2.5 rounded-xl font-bold hover:bg-blue-50 transition shadow-lg active:scale-95">Print / Download PDF</button>
+                <button onclick="window.close()"
+                    class="bg-red-500/90 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-red-600 transition shadow-lg active:scale-95">Close</button>
+            </div>
+        </div>
+
+        <div class="p-8 md:p-12 space-y-10">
+            <!-- Top Section: Name and Photo -->
+            <div class="flex justify-between items-start border-b border-gray-100 pb-8">
+                <div class="space-y-4">
+                    <div>
+                        <span class="text-blue-600 font-bold text-xs uppercase tracking-widest bg-blue-50 px-3 py-1 rounded-full mb-3 inline-block">Registered Candidate</span>
+                        <h2 class="text-4xl font-extrabold text-gray-900 tracking-tight" id="appStudentName">Loading...</h2>
+                    </div>
+                    <div class="flex gap-6 mt-4">
+                        <div class="flex flex-col">
+                            <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Current Status</span>
+                            <span id="appStatus" class="font-bold text-emerald-600 text-sm">Pending</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Submission Date</span>
+                            <span id="appDate" class="font-bold text-gray-800 text-sm">N/A</span>
+                        </div>
+                    </div>
+                </div>
+                <div id="appPhotoContainer" class="shadow-2xl rounded-2xl overflow-hidden border-4 border-white ring-1 ring-gray-100">
+                    <img id="appPhoto" src="" alt="Passport Photo" class="passport-photo w-32 h-40 object-cover">
+                </div>
+            </div>
+
+            <!-- Detailed Info Sections -->
+            <div class="grid grid-cols-2 gap-12">
+                <!-- Personal Info -->
+                <div class="space-y-6">
+                    <h3 class="text-xs font-black uppercase tracking-[0.2em] text-blue-800 border-l-4 border-blue-600 pl-4 bg-blue-50/50 py-2 rounded-r-lg">Identity Details</h3>
+                    <div class="grid grid-cols-1 gap-4 text-sm">
+                        <div class="flex flex-col border-b border-gray-50 pb-2">
+                            <span class="text-[10px] text-gray-400 font-bold uppercase mb-0.5">Full Name</span>
+                            <span id="appStudentNameDisplay" class="font-semibold text-gray-800"></span>
+                        </div>
+                        <p class="flex justify-between border-b pb-1"><strong>DOB:</strong> <span id="appDob" class="text-gray-900 font-medium"></span></p>
+                        <p class="flex justify-between border-b pb-1"><strong>Gender:</strong> <span id="appGender" class="text-gray-900 font-medium"></span></p>
+                        <p class="flex justify-between border-b pb-1"><strong>Aadhaar:</strong> <span id="appAadhaar" class="text-gray-900 font-medium"></span></p>
+                        <p class="flex justify-between border-b pb-1"><strong>Email:</strong> <span id="appEmail" class="text-gray-900 font-medium lowercase"></span></p>
+                        <p class="flex justify-between border-b pb-1"><strong>Primary Mobile:</strong> <span id="appMobile" class="text-gray-900 font-medium"></span></p>
+                        <p class="flex justify-between border-b pb-1"><strong>Blood Group:</strong> <span id="appBlood" class="text-gray-900 font-medium"></span></p>
+                        <p class="flex justify-between border-b pb-1"><strong>Marital Status:</strong> <span id="appMarital" class="text-gray-900 font-medium"></span></p>
+                    </div>
+                </div>
+
+                <!-- Academic & Choices -->
+                <div class="space-y-6">
+                    <h3 class="text-xs font-black uppercase tracking-[0.2em] text-blue-800 border-l-4 border-blue-600 pl-4 bg-blue-50/50 py-2 rounded-r-lg">Academics & Choices</h3>
+                    <div class="grid grid-cols-1 gap-4 text-sm">
+                        <div class="flex gap-4 border-b pb-2">
+                            <div class="flex-1 bg-gray-50 p-2 rounded-lg text-center border">
+                                <span class="block text-[8px] text-gray-400 font-bold uppercase">10th Score</span>
+                                <span id="appTenth" class="text-lg font-black text-blue-900"></span><span class="text-[10px] text-blue-900">%</span>
+                            </div>
+                            <div class="flex-1 bg-blue-50 p-2 rounded-lg text-center border border-blue-100">
+                                <span class="block text-[8px] text-blue-400 font-bold uppercase">12th Score</span>
+                                <span id="appTwelfth" class="text-lg font-black text-blue-900"></span><span class="text-[10px] text-blue-900">%</span>
+                            </div>
+                        </div>
+                        <p class="flex justify-between border-b pb-1"><strong>Course:</strong> <span id="appCourse" class="text-gray-900 font-bold"></span></p>
+                        <p class="flex justify-between border-b pb-1"><strong>Program:</strong> <span id="appProgram" class="text-gray-900 font-medium"></span></p>
+                        <p class="flex justify-between border-b pb-1"><strong>College:</strong> <span id="appCollege" class="text-gray-900 font-medium"></span></p>
+                        <p class="flex justify-between border-b pb-1"><strong>First Graduate:</strong> <span id="appFirstGraduate" class="text-gray-900 font-medium"></span></p>
+                        <div class="bg-indigo-50 p-3 rounded-xl flex items-center justify-between border border-indigo-100">
+                            <span class="text-[10px] text-indigo-400 font-black uppercase">Referred By</span>
+                            <span id="appReferred" class="text-indigo-900 font-black text-xs italic"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Address and Declaration -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 pt-4">
+                <div class="col-span-1 space-y-4">
+                    <h3 class="text-xs font-black uppercase tracking-wider text-gray-400">Communication Address</h3>
+                    <p class="text-xs border-2 border-dashed p-4 rounded-2xl bg-gray-50 text-gray-600 font-medium leading-relaxed min-h-[100px]" id="appAddress"></p>
+                </div>
+                <div class="col-span-2 flex flex-col justify-end space-y-8">
+                    <p class="text-[10px] text-gray-400 leading-relaxed italic text-center px-10">
+                        "I hereby declare that the information provided in this application is true, accurate, and complete to the best of my knowledge. I understand that any false statement or omission of facts may be grounds for rejection of this application."
+                    </p>
+                    <div class="flex justify-between gap-12 pt-6">
+                        <div class="flex-1 text-center">
+                            <div class="h-10 border-b border-gray-200 mb-2"></div>
+                            <span class="text-[9px] font-black uppercase tracking-widest text-gray-400">Candidate Signature</span>
+                        </div>
+                        <div class="flex-1 text-center">
+                            <div class="h-10 border-b border-gray-200 mb-2"></div>
+                            <span class="text-[9px] font-black uppercase tracking-widest text-gray-400">Official Seal & Sign</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-[8px] text-gray-300 text-center pt-6 border-t font-medium tracking-[0.3em] uppercase">
+                Generated via Study Corner Digital CRM • 100% Paperless Process
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = '/api';
+        const urlParams = new URLSearchParams(window.location.search);
+        const leadId = urlParams.get('id');
+
+        async function loadApplication() {
+            const role = localStorage.getItem('crmRole');
+            const currentName = localStorage.getItem('crmName');
+
+            if (!leadId) {
+                alert("Application ID missing");
+                window.location.href = 'dashboard.html';
+                return;
+            }
+
+            try {
+                // If Agent, only fetch their own leads to ensure search finds nothing if restricted
+                let url = `${API_URL}/leads`;
+                if (role !== 'Admin') {
+                    url += `?referredBy=${encodeURIComponent(currentName)}`;
+                }
+
+                const res = await fetch(url);
+                const leads = await res.json();
+                const lead = leads.find(l => l._id == leadId);
+
+                if (!lead) {
+                    alert("Access Denied: You do not have permission to view this application.");
+                    window.location.href = 'dashboard.html';
+                    return;
+                }
+
+                // Extra safety check
+                if (role !== 'Admin' && lead.referredBy !== currentName) {
+                    alert("Security Violation: Access restricted.");
+                    window.location.href = 'dashboard.html';
+                    return;
+                }
+
+                // Map Data
+                document.getElementById('appStudentName').textContent = lead.studentName;
+                document.getElementById('appStudentNameDisplay').textContent = lead.studentName;
+                document.getElementById('appStatus').textContent = lead.status;
+                document.getElementById('appDate').textContent = new Date(lead.createdAt).toLocaleDateString();
+                document.getElementById('appAddress').textContent = lead.address || "N/A";
+
+                // Photo
+                if (lead.studentPhoto) {
+                    document.getElementById('appPhoto').src = lead.studentPhoto;
+                } else {
+                    document.getElementById('appPhoto').style.display = 'none';
+                    document.getElementById('appPhotoContainer').innerHTML = "<div class='passport-photo flex items-center justify-center text-gray-400 bg-gray-100 text-xs'>No Photo</div>";
+                }
+
+                const setVal = (id, val) => { document.getElementById(id).textContent = val || "N/A"; };
+
+                setVal('appDob', lead.dob);
+                setVal('appGender', lead.gender);
+                setVal('appAadhaar', lead.aadhaar);
+                setVal('appEmail', lead.email);
+                setVal('appMobile', lead.mobile);
+                setVal('appAltMobile', lead.altMobile);
+                setVal('appBlood', lead.bloodGroup);
+                setVal('appMarital', lead.maritalStatus);
+                setVal('appReligion', lead.religion);
+                setVal('appNationality', lead.nationality);
+                setVal('appCommunity', lead.community);
+                setVal('appSubCaste', lead.subCaste);
+                setVal('appMotherTongue', lead.motherTongue);
+                setVal('appFirstGraduate', lead.firstGraduate);
+                setVal('appTenth', lead.tenthPercent);
+                setVal('appTwelfth', lead.twelfthPercent);
+                setVal('appCourse', lead.preferredCourse);
+                setVal('appProgram', lead.program);
+                setVal('appBranch', lead.branch);
+                setVal('appCollege', lead.preferredCollege);
+                setVal('appReferred', lead.referredBy);
+
+            } catch (err) {
+                console.error("Failed to load application", err);
+                alert("Error loading data");
+            }
+        }
+
+        loadApplication();
+    </script>
+<script src="js/chatbot.js"></script>
+</body>
+
+</html>

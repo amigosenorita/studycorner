@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Corner Educational Services - Your Gateway to Top Colleges</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="bg-gray-50 text-gray-800 font-sans">
+
+    <!-- Navigation -->
+    <nav class="bg-blue-900 text-white p-4 sticky top-0 z-50 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <div class="logo-box">
+                    <img src="logo.png" alt="Logo">
+                </div>
+                <!-- Vertical white bar -->
+                <div class="hidden sm:block w-[2px] h-8 bg-white opacity-50"></div>
+                <h1 class="text-2xl font-bold tracking-wider hidden sm:block">Study Corner<span class="text-blue-300">
+                        Educational Services</span></h1>
+            </div>
+            <div class="space-x-4 hidden md:flex">
+                <a href="#home" class="hover:text-blue-300 transition duration-300">Home</a>
+                <a href="#courses" class="hover:text-blue-300 transition duration-300">Courses</a>
+                <a href="#process" class="hover:text-blue-300 transition duration-300">Process</a>
+                <a href="#contact" class="hover:text-blue-300 transition duration-300">Contact</a>
+            </div>
+            <!-- Hamburger Menu Button -->
+            <button id="menu-btn" class="text-white hover:text-blue-300 focus:outline-none rounded p-1">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16">
+                    </path>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Side Menu Bar -->
+    <div id="side-menu"
+        class="fixed inset-y-0 right-0 w-64 bg-blue-900 text-white transform translate-x-full transition-transform duration-300 z-50 shadow-2xl flex flex-col">
+        <div class="p-4 flex justify-between items-center border-b border-blue-800">
+            <h2 class="text-xl font-bold">Menu</h2>
+            <button id="close-menu-btn" class="text-white hover:text-red-400 focus:outline-none rounded p-1">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+        </div>
+        <div class="flex flex-col p-6 space-y-4">
+            <a href="admission-form.html"
+                class="bg-blue-500 hover:bg-blue-600 text-center px-4 py-3 rounded-md font-semibold transition duration-300 shadow-lg text-lg">Apply
+                Now</a>
+            <a href="login.html"
+                class="bg-gray-800 hover:bg-gray-700 text-center px-4 py-3 rounded-md font-semibold transition duration-300 shadow-lg text-lg border border-gray-600">Login</a>
+
+            <div class="border-t border-blue-800 my-2"></div>
+
+            <a href="#home" class="hover:text-blue-300 transition duration-300 text-lg py-2"
+                onclick="closeMenu()">Home</a>
+            <a href="#courses" class="hover:text-blue-300 transition duration-300 text-lg py-2"
+                onclick="closeMenu()">Courses</a>
+            <a href="#process" class="hover:text-blue-300 transition duration-300 text-lg py-2"
+                onclick="closeMenu()">Process</a>
+            <a href="#contact" class="hover:text-blue-300 transition duration-300 text-lg py-2"
+                onclick="closeMenu()">Contact</a>
+        </div>
+    </div>
+
+    <!-- Overlay -->
+    <div id="menu-overlay" class="fixed inset-0 bg-black opacity-50 z-40 hidden transition-opacity duration-300"></div>
+
+    <!-- Hero Section -->
+    <section id="home" class="relative bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 text-white py-32 px-6 text-center overflow-hidden">
+        <!-- Overlay Effects -->
+        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+        <div class="absolute top-0 right-0 -mr-32 -mt-32 w-96 h-96 rounded-full bg-blue-500 blur-3xl opacity-20"></div>
+        <div class="absolute bottom-0 left-0 -ml-32 -mb-32 w-96 h-96 rounded-full bg-indigo-500 blur-3xl opacity-20"></div>
+
+        <div class="relative z-10 max-w-4xl mx-auto space-y-8 mt-6">
+            <h2 class="text-5xl md:text-6xl font-extrabold leading-tight tracking-tight drop-shadow-lg">
+                Your Future Starts <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-white">Here</span>
+            </h2>
+            <p class="text-lg md:text-2xl font-light text-blue-100 max-w-2xl mx-auto leading-relaxed opacity-90">
+                A seamless, 100% Guaranteed paperless admission process to top Medical, Engineering, and Science colleges across India.
+            </p>
+            <div class="pt-4 pb-4">
+                <a href="admission-form.html"
+                   class="bg-white text-blue-900 px-10 py-4 border border-white rounded-full font-bold text-lg hover:bg-transparent hover:text-white transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.3)] inline-block transform hover:-translate-y-1">
+                    Start Admission Process
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Logo Slider Section -->
+    <section class="logo-slider border-b border-gray-200">
+        <div class="logo-track">
+            <!-- First Set -->
+            <img src="dsu.png" alt="DSU">
+            <img src="srm.png" alt="SRM">
+            <img src="karpagam.png" alt="Karpagam">
+            <img src="rathinam.png" alt="Rathinam">
+            <img src="hindustan.png" alt="Hindustan">
+            <img src="adithya.png" alt="Adithya">
+            <img src="kit.png" alt="KIT">
+            <img src="paavai.png" alt="Paavai">
+
+            <!-- Duplicated Set for Seamless Scroll -->
+            <img src="dsu.png" alt="DSU">
+            <img src="srm.png" alt="SRM">
+            <img src="karpagam.png" alt="Karpagam">
+            <img src="rathinam.png" alt="Rathinam">
+            <img src="hindustan.png" alt="Hindustan">
+            <img src="adithya.png" alt="Adithya">
+            <img src="kit.png" alt="KIT">
+            <img src="paavai.png" alt="Paavai">
+        </div>
+    </section>
+
+    <!-- ================= PARALLEL AUTO GALLERY ================= -->
+
+    <section class="gallery-container">
+
+        <div class="gallery-row">
+
+            <!-- Gallery 1 -->
+            <div class="slider">
+                <div class="slides slide-left">
+
+                    <div class="slide"><img src="rathinamview.jpg"></div>
+                    <div class="slide"><img src="dsauditorium.jpg"></div>
+                    <div class="slide"><img src="image2.jpeg"></div>
+                    <div class="slide"><img src="image3.jpeg"></div>
+                    <div class="slide"><img src="image4.jpeg"></div>
+                    <div class="slide"><img src="image1.jpeg"></div>
+                    <div class="slide"><img src="image5.jpeg"></div>
+                    <div class="slide"><img src="image6.jpeg"></div>
+                    <div class="slide"><img src="rathinamarts.jpg"></div>
+                    <div class="slide"><img src="rathinamit.jpg"></div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- Courses Section -->
+    <section id="courses" class="py-24 bg-gradient-to-b from-white to-gray-50 px-6">
+        <div class="container mx-auto text-center max-w-6xl">
+            <h2 class="text-4xl font-extrabold text-blue-900 mb-4 tracking-tight">Popular Courses We Offer</h2>
+            <div class="w-24 h-1 bg-blue-500 mx-auto mb-12 rounded-full"></div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+                <!-- Course Cards -->
+                <a href="medicine.html" class="group relative block p-6 border border-gray-100 rounded-2xl shadow-sm hover:shadow-xl bg-white hover:-translate-y-2 transition-all duration-300 overflow-hidden cursor-pointer">
+                    <div class="absolute inset-0 bg-gradient-to-r from-blue-50 to-indigo-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div class="relative z-10 font-bold text-lg text-gray-800 group-hover:text-blue-700 tracking-wide">Medical</div>
+                </a>
+                <a href="engineering.html" class="group relative block p-6 border border-gray-100 rounded-2xl shadow-sm hover:shadow-xl bg-white hover:-translate-y-2 transition-all duration-300 overflow-hidden cursor-pointer">
+                    <div class="absolute inset-0 bg-gradient-to-r from-blue-50 to-indigo-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div class="relative z-10 font-bold text-lg text-gray-800 group-hover:text-blue-700 tracking-wide">Engineering</div>
+                </a>
+                <a href="agriculture.html" class="group relative block p-6 border border-gray-100 rounded-2xl shadow-sm hover:shadow-xl bg-white hover:-translate-y-2 transition-all duration-300 overflow-hidden cursor-pointer">
+                    <div class="absolute inset-0 bg-gradient-to-r from-blue-50 to-indigo-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div class="relative z-10 font-bold text-lg text-gray-800 group-hover:text-blue-700 tracking-wide">Agriculture</div>
+                </a>
+                <a href="law.html" class="group relative block p-6 border border-gray-100 rounded-2xl shadow-sm hover:shadow-xl bg-white hover:-translate-y-2 transition-all duration-300 overflow-hidden cursor-pointer">
+                    <div class="absolute inset-0 bg-gradient-to-r from-blue-50 to-indigo-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div class="relative z-10 font-bold text-lg text-gray-800 group-hover:text-blue-700 tracking-wide">Law</div>
+                </a>
+                <a href="nursing.html" class="group relative block p-6 border border-gray-100 rounded-2xl shadow-sm hover:shadow-xl bg-white hover:-translate-y-2 transition-all duration-300 overflow-hidden cursor-pointer">
+                    <div class="absolute inset-0 bg-gradient-to-r from-blue-50 to-indigo-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div class="relative z-10 font-bold text-lg text-gray-800 group-hover:text-blue-700 tracking-wide">Nursing</div>
+                </a>
+                <a href="pharmacy.html" class="group relative block p-6 border border-gray-100 rounded-2xl shadow-sm hover:shadow-xl bg-white hover:-translate-y-2 transition-all duration-300 overflow-hidden cursor-pointer">
+                    <div class="absolute inset-0 bg-gradient-to-r from-blue-50 to-indigo-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div class="relative z-10 font-bold text-lg text-gray-800 group-hover:text-blue-700 tracking-wide">Pharmacy</div>
+                </a>
+                <a href="physiotherapy.html" class="group relative block p-6 border border-gray-100 rounded-2xl shadow-sm hover:shadow-xl bg-white hover:-translate-y-2 transition-all duration-300 overflow-hidden cursor-pointer">
+                    <div class="absolute inset-0 bg-gradient-to-r from-blue-50 to-indigo-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div class="relative z-10 font-bold text-lg text-gray-800 group-hover:text-blue-700 tracking-wide">Physiotherapy</div>
+                </a>
+                <a href="allied-health-science.html" class="group relative block p-6 border border-gray-100 rounded-2xl shadow-sm hover:shadow-xl bg-white hover:-translate-y-2 transition-all duration-300 overflow-hidden cursor-pointer">
+                    <div class="absolute inset-0 bg-gradient-to-r from-blue-50 to-indigo-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div class="relative z-10 font-bold text-lg text-gray-800 group-hover:text-blue-700 tracking-wide">Allied Health</div>
+                </a>
+                <a href="polytechnic.html" class="group relative block p-6 border border-gray-100 rounded-2xl shadow-sm hover:shadow-xl bg-white hover:-translate-y-2 transition-all duration-300 overflow-hidden cursor-pointer">
+                    <div class="absolute inset-0 bg-gradient-to-r from-blue-50 to-indigo-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div class="relative z-10 font-bold text-lg text-gray-800 group-hover:text-blue-700 tracking-wide">Polytechnic</div>
+                </a>
+                <a href="arts-and-science.html" class="group relative block p-6 border border-gray-100 rounded-2xl shadow-sm hover:shadow-xl bg-white hover:-translate-y-2 transition-all duration-300 overflow-hidden cursor-pointer">
+                    <div class="absolute inset-0 bg-gradient-to-r from-blue-50 to-indigo-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div class="relative z-10 font-bold text-lg text-gray-800 group-hover:text-blue-700 tracking-wide">Arts & Science</div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Admission Process -->
+    <section id="process" class="py-16 bg-blue-50 px-4">
+        <div class="container mx-auto">
+            <h2 class="text-3xl font-bold text-center text-blue-900 mb-10">Our Paperless Admission Process</h2>
+            <div class="grid md:grid-cols-4 gap-8 text-center max-w-5xl mx-auto">
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <div
+                        class="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">
+                        1</div>
+                    <h3 class="font-semibold text-lg mb-2">Fill Lead Form</h3>
+                    <p class="text-gray-600 text-sm">Submit your basic and academic details online.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <div
+                        class="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">
+                        2</div>
+                    <h3 class="font-semibold text-lg mb-2">Counseling</h3>
+                    <p class="text-gray-600 text-sm">Our expert guides you to choose the right college.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <div
+                        class="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">
+                        3</div>
+                    <h3 class="font-semibold text-lg mb-2">Documentation</h3>
+                    <p class="text-gray-600 text-sm">Upload required documents simply via your phone.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <div
+                        class="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">
+                        4</div>
+                    <h3 class="font-semibold text-lg mb-2">Admission Confirmed</h3>
+                    <p class="text-gray-600 text-sm">Get your admission letter and get ready for college!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="bg-gray-900 text-gray-300 py-12 px-6 text-center">
+        <div class="container mx-auto">
+            <h2 class="mb-4 text-2xl font-bold text-white tracking-wider">Study Corner <span
+                    class="text-blue-400">Educational Services</span></h2>
+
+            <div
+                class="flex flex-col md:flex-row justify-center items-center gap-2 md:gap-6 mb-4 text-sm text-gray-400">
+                <p><span class="text-gray-200 font-semibold">Founder:</span> Arun Rajendran</p>
+                <div class="hidden md:block w-px h-4 bg-gray-600"></div>
+                <p><span class="text-gray-200 font-semibold">Contact:</span> 8072927565, 7826902010</p>
+            </div>
+
+            <p class="mb-8 text-sm max-w-lg mx-auto leading-relaxed text-gray-400">
+                <span class="text-gray-200 font-semibold">Address:</span> SR Complex, 1st Floor, Near Taluka Office,
+                Muthazhagappa Road, Peravurani - 614 804
+            </p>
+
+            <div class="border-t border-gray-800 pt-6 mt-4">
+                <p class="text-xs text-gray-500">&copy; 2026 Study Corner Educational Services. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const menuBtn = document.getElementById('menu-btn');
+        const closeMenuBtn = document.getElementById('close-menu-btn');
+        const sideMenu = document.getElementById('side-menu');
+        const menuOverlay = document.getElementById('menu-overlay');
+
+        function openMenu() {
+            sideMenu.classList.remove('translate-x-full');
+            menuOverlay.classList.remove('hidden');
+        }
+
+        function closeMenu() {
+            sideMenu.classList.add('translate-x-full');
+            menuOverlay.classList.add('hidden');
+        }
+
+        if (menuBtn && closeMenuBtn && sideMenu && menuOverlay) {
+            menuBtn.addEventListener('click', openMenu);
+            closeMenuBtn.addEventListener('click', closeMenu);
+            menuOverlay.addEventListener('click', closeMenu);
+        }
+    </script>
+<script src="js/chatbot.js"></script>
+</body>
+
+</html>

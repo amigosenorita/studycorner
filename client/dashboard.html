@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+        // Must be checked before body load
+        if (!localStorage.getItem('crmToken')) {
+            window.location.href = 'login.html';
+        }
+    </script>
+</head>
+
+<body class="bg-gray-50 flex h-screen overflow-hidden font-sans">
+    
+    <!-- Mobile Sidebar Toggle Overlay -->
+    <div id="sidebarOverlay" class="fixed inset-0 bg-blue-900/50 backdrop-blur-sm z-30 hidden md:hidden transition-opacity duration-300"></div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="w-72 bg-gradient-to-b from-blue-900 via-blue-900 to-indigo-900 text-white flex flex-col fixed md:relative inset-y-0 left-0 transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-40 shadow-2xl h-full">
+        <div class="p-6 text-center border-b border-white/10 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-white opacity-5 rounded-full -mr-16 -mt-16"></div>
+            <h1 class="text-2xl font-extrabold tracking-tight drop-shadow-md relative z-10">Study <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-300 to-white">Corner</span></h1>
+            <p class="text-xs text-blue-200 mt-1 font-medium tracking-wide uppercase" id="userRoleDisplay">Loading...</p>
+        </div>
+        
+        <nav class="flex-1 py-6 space-y-2 px-4 shadow-inner overflow-y-auto">
+            <a href="#" id="nav-dashboard" class="block px-5 py-3.5 rounded-xl font-semibold hover:bg-white/10 hover:shadow-lg transition duration-200 bg-white/10 shadow-md">Dashboard</a>
+            <a href="#" id="nav-leads" class="block px-5 py-3.5 rounded-xl font-medium hover:bg-white/10 hover:shadow-lg transition duration-200 text-gray-100">All Leads</a>
+            <a href="#" id="nav-agents" class="block px-5 py-3.5 rounded-xl font-medium hover:bg-white/10 hover:shadow-lg transition duration-200 hidden text-gray-100">Manage Agents</a>
+            <a href="#" id="nav-references" class="block px-5 py-3.5 rounded-xl font-medium hover:bg-white/10 hover:shadow-lg transition duration-200 hidden text-gray-100">Manage References</a>
+            <a href="#" id="nav-formOptions" class="block px-5 py-3.5 rounded-xl font-medium hover:bg-white/10 hover:shadow-lg transition duration-200 hidden text-gray-100">Manage Checklists</a>
+            <a href="#" id="nav-changePassword" class="block px-5 py-3.5 rounded-xl font-medium hover:bg-white/10 hover:shadow-lg transition duration-200 text-gray-100">Change Password</a>
+        </nav>
+        
+        <div class="p-5 border-t border-white/10 relative overflow-hidden bg-black/10 text-center">
+            <button onclick="logout()" class="w-full bg-red-500/90 hover:bg-red-600 text-white font-bold py-3 px-4 rounded-xl transition duration-300 shadow-lg border border-red-400">Logout</button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col h-screen overflow-hidden bg-gray-50">
+        <!-- Header -->
+        <header class="bg-white shadow-sm border-b border-gray-100 p-4 flex justify-between items-center z-10 sticky top-0">
+            <div class="flex items-center">
+                <button id="mobileMenuBtn" class="md:hidden mr-4 text-gray-600 hover:text-blue-600 focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+                <h2 class="text-xl font-bold text-gray-800" id="pageTitle">Dashboard Overview</h2>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <span class="text-sm font-semibold text-gray-600 bg-gray-100 px-3 py-1 rounded-full border border-gray-200 hidden sm:block" id="userNameDisplay">Welcome</span>
+                <button onclick="exportExcel()" id="exportBtn" class="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-sm font-bold px-5 py-2 rounded-lg shadow-md transition-all duration-300 transform hover:-translate-y-0.5 hidden">
+                    Export Excel
+                </button>
+            </div>
+        </header>
+
+        <!-- Dynamic Area -->
+        <div class="flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-8">
+
+            <!-- Dashboard View -->
+            <div id="view-dashboard">
+                <!-- Stats Row -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-white rounded-lg shadow-sm p-6 border-l-4 border-blue-500">
+                        <h3 class="text-gray-500 text-sm font-semibold uppercase tracking-wider">Total Leads</h3>
+                        <p class="text-3xl font-bold text-gray-800 mt-2" id="statTotalLeads">0</p>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-sm p-6 border-l-4 border-green-500">
+                        <h3 class="text-gray-500 text-sm font-semibold uppercase tracking-wider">Admissions Confirmed
+                        </h3>
+                        <p class="text-3xl font-bold text-gray-800 mt-2" id="statConfirmed">0</p>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-sm p-6 border-l-4 border-yellow-500">
+                        <h3 class="text-gray-500 text-sm font-semibold uppercase tracking-wider">New Leads Need Action
+                        </h3>
+                        <p class="text-3xl font-bold text-gray-800 mt-2" id="statNew">0</p>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
+                        <h3 class="font-semibold text-gray-700 mb-4 text-center">Course Wise Leads</h3>
+                        <canvas id="courseChart"></canvas>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
+                        <h3 class="font-semibold text-gray-700 mb-4 text-center">Admission Funnel</h3>
+                        <canvas id="funnelChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Leads View -->
+            <div id="view-leads" class="hidden h-full flex flex-col">
+                <div
+                    class="mb-4 bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex flex-wrap gap-4 items-center justify-between">
+                    <h2 class="font-bold text-gray-700">Student Lead Pipeline</h2>
+                    <input type="text" id="leadSearch" onkeyup="filterLeads()"
+                        placeholder="Search Student by Name / Mobile / Email..."
+                        class="border px-4 py-2 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 w-full md:w-96">
+                </div>
+                <div class="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Student Details</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Academics</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Course/College</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Status</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leadsTableBody" class="bg-white divide-y divide-gray-200 text-sm">
+                            <!-- Populated via JS -->
+                            <tr>
+                                <td colspan="5" class="px-6 py-4 text-center text-gray-500">Loading leads...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Agents View -->
+            <div id="view-agents" class="hidden h-full">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Create Agent Form -->
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                        <div class="text-center mb-6">
+                            <h2 class="text-xl font-bold text-blue-900">Create New Agent</h2>
+                            <p class="text-gray-500 text-sm">Add a team member</p>
+                        </div>
+                        <div id="registerMsg" class="hidden text-sm mb-4 text-center p-2 rounded"></div>
+                        <form id="registerForm" class="space-y-4">
+                            <div>
+                                <label class="block text-gray-700 text-sm font-bold mb-2">Full Name</label>
+                                <input type="text" id="regName" required
+                                    class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 text-sm font-bold mb-2">Email Address</label>
+                                <input type="email" id="regEmail" required
+                                    class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 text-sm font-bold mb-2">Password</label>
+                                <input type="password" id="regPassword" required
+                                    class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 text-sm font-bold mb-2">Role</label>
+                                <select id="regRole"
+                                    class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                                    <option value="Agent">Agent</option>
+                                    <option value="Admin">Admin</option>
+                                </select>
+                            </div>
+                            <button type="submit"
+                                class="w-full bg-green-600 text-white font-bold py-2 px-4 rounded hover:bg-green-700 transition duration-300">Create
+                                Account</button>
+                        </form>
+                    </div>
+
+                    <!-- Existing Agents Table -->
+                    <div class="lg:col-span-2 bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="bg-blue-50 p-4 border-b border-gray-200 flex justify-between items-center">
+                            <h2 class="font-bold text-gray-700 text-lg">Manage Existing Agents</h2>
+                            <input type="text" id="agentSearch" onkeyup="filterAgents()" placeholder="Search Agents..."
+                                class="border px-3 py-1 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 w-48">
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-white">
+                                    <tr>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Name</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Email</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Role</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="agentsTableBody" class="bg-white divide-y divide-gray-200 text-sm">
+                                    <tr>
+                                        <td colspan="4" class="px-6 py-4 text-center text-gray-500">Loading agents...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- References View -->
+            <div id="view-references" class="hidden h-full">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Create Reference Form -->
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                        <div class="text-center mb-6">
+                            <h2 class="text-xl font-bold text-blue-900">Add Reference Name</h2>
+                            <p class="text-gray-500 text-sm">Add a new reference source</p>
+                        </div>
+                        <div id="referenceMsg" class="hidden text-sm mb-4 text-center p-2 rounded"></div>
+                        <form id="referenceForm" class="space-y-4">
+                            <div>
+                                <label class="block text-gray-700 text-sm font-bold mb-2">Reference Name</label>
+                                <input type="text" id="refName" required
+                                    class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    placeholder="e.g. John Doe / Agency XYZ">
+                            </div>
+                            <button type="submit"
+                                class="w-full bg-green-600 text-white font-bold py-2 px-4 rounded hover:bg-green-700 transition duration-300">Add
+                                Reference
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Existing References Table -->
+                    <div class="lg:col-span-2 bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="bg-blue-50 p-4 border-b border-gray-200 flex justify-between items-center">
+                            <h2 class="font-bold text-gray-700 text-lg">Manage Reference Names</h2>
+                            <input type="text" id="refSearch" onkeyup="filterReferences()"
+                                placeholder="Search References..."
+                                class="border px-3 py-1 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 w-48">
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-white">
+                                    <tr>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Reference Name</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="referencesTableBody" class="bg-white divide-y divide-gray-200 text-sm">
+                                    <tr>
+                                        <td colspan="2" class="px-6 py-4 text-center text-gray-500">Loading
+                                            references...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Options View -->
+            <div id="view-formOptions" class="hidden h-full">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Create Form Option Form -->
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                        <div class="text-center mb-6">
+                            <h2 class="text-xl font-bold text-blue-900">Add Option List Item</h2>
+                            <p class="text-gray-500 text-sm">Add option for dropdown lists</p>
+                        </div>
+                        <div id="formOptionMsg" class="hidden text-sm mb-4 text-center p-2 rounded"></div>
+                        <form id="formOptionForm" class="space-y-4">
+                            <div>
+                                <label class="block text-gray-700 text-sm font-bold mb-2">Category List</label>
+                                <select id="dropdownCat"
+                                    class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                                    required>
+                                    <option value="Gender">Gender</option>
+                                    <option value="Blood Group">Blood Group</option>
+                                    <option value="Marital Status">Marital Status</option>
+                                    <option value="Religion">Religion</option>
+                                    <option value="Nationality">Nationality</option>
+                                    <option value="Sub Caste">Sub Caste</option>
+                                    <option value="Mother Tongue">Mother Tongue</option>
+                                    <option value="First Graduate">First Graduate</option>
+                                    <option value="Preferred College">Preferred College</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 text-sm font-bold mb-2">New Option Value</label>
+                                <input type="text" id="dropdownVal" required
+                                    class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    placeholder="e.g. O+">
+                            </div>
+                            <button type="submit"
+                                class="w-full bg-indigo-600 text-white font-bold py-2 px-4 rounded hover:bg-indigo-700 transition duration-300">Add
+                                Item
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Existing Form Options Table -->
+                    <div
+                        class="lg:col-span-2 bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden flex flex-col h-[500px]">
+                        <div
+                            class="bg-blue-50 p-4 border-b border-gray-200 flex flex-wrap gap-2 justify-between items-center">
+                            <h2 class="font-bold text-gray-700 text-lg">Manage Existing Checklist Options</h2>
+                            <div class="flex gap-2">
+                                <input type="text" id="optionSearch" onkeyup="filterOptions()"
+                                    placeholder="Search items..."
+                                    class="border px-3 py-1 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 w-32">
+                                <select id="filterDropdownCat" onchange="loadFormOptionsTable()"
+                                    class="border px-2 py-1 rounded bg-white text-sm focus:outline-none">
+                                    <option value="Gender">Gender</option>
+                                    <option value="Blood Group">Blood Group</option>
+                                    <option value="Marital Status">Marital Status</option>
+                                    <option value="Religion">Religion</option>
+                                    <option value="Nationality">Nationality</option>
+                                    <option value="Sub Caste">Sub Caste</option>
+                                    <option value="Mother Tongue">Mother Tongue</option>
+                                    <option value="First Graduate">First Graduate</option>
+                                    <option value="Preferred College">Preferred College</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto flex-1 overflow-y-auto">
+                            <table class="min-w-full divide-y divide-gray-200 h-full">
+                                <thead class="bg-white sticky top-0">
+                                    <tr>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Category</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Value</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="formOptionsTableBody" class="bg-white divide-y divide-gray-200 text-sm">
+                                    <tr>
+                                        <td colspan="3" class="px-6 py-4 text-center text-gray-500">Loading checklist
+                                            options...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Change Password View -->
+            <div id="view-changePassword" class="hidden h-full max-w-md mx-auto">
+                <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                    <div class="text-center mb-6">
+                        <h2 class="text-2xl font-bold text-blue-900">Security Settings</h2>
+                        <p class="text-gray-500 text-sm">Update your account password</p>
+                    </div>
+                    <div id="changePasswordMsg" class="hidden text-sm mb-4 text-center p-2 rounded"></div>
+                    <form id="changePasswordForm" class="space-y-4">
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-2">Current Password</label>
+                            <input type="password" id="currentPassword" required
+                                class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-2">New Password</label>
+                            <input type="password" id="newPassword" required
+                                class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-2">Confirm New Password</label>
+                            <input type="password" id="confirmPassword" required
+                                class="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <button type="submit"
+                            class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition duration-300">Update
+                            Password</button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="js/script.js"></script>
+    <script>
+        // Init dashboard functions specifically
+        document.addEventListener('DOMContentLoaded', () => {
+            initDashboard();
+
+            // Mobile Sidebar Toggle Logic
+            const mobileBtn = document.getElementById('mobileMenuBtn');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+
+            function openSidebar() {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            }
+
+            function closeSidebar() {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+
+            if(mobileBtn) mobileBtn.addEventListener('click', openSidebar);
+            if(overlay) overlay.addEventListener('click', closeSidebar);
+
+            // Close sidebar when a nav link is clicked on mobile
+            const navLinks = sidebar.querySelectorAll('a[id^="nav-"]');
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if(window.innerWidth < 768) closeSidebar();
+                });
+            });
+        });
+    </script>
+<script src="js/chatbot.js"></script>
+</body>
+
+</html>
