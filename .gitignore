@@ -1,0 +1,7 @@
+.vercel
+.firebase/
+firebase-debug.log
+server/.env
+server/serviceAccountKey.json
+node_modules/
+server/node_modules/

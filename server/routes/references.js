@@ -1,38 +1,33 @@
 const express = require('express');
+const { query } = require('../config/db');
+const { requireAuth } = require('../middleware/auth');
+
 const router = express.Router();
-const Reference = require('../models/Reference');
 
-// Get all references
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
     try {
-        const references = await Reference.find();
-        res.json(references);
+        const rows = await query('SELECT id AS _id, name FROM references_list ORDER BY name ASC');
+        res.json(rows.map(row => ({ ...row, _id: String(row._id) })));
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        next(err);
     }
 });
 
-// Add a new reference
-router.post('/', async (req, res) => {
+router.post('/', requireAuth, async (req, res, next) => {
     try {
-        const { name } = req.body;
-        if (!name) return res.status(400).json({ message: 'Reference name is required' });
-        const reference = new Reference({ name });
-        await reference.save();
-        res.status(201).json(reference);
+        await query('INSERT INTO references_list (name) VALUES ($1) ON CONFLICT (name) DO NOTHING', [req.body.name]);
+        res.status(201).json({ message: 'Reference added successfully' });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        next(err);
     }
 });
 
-// Delete a reference
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', requireAuth, async (req, res, next) => {
     try {
-        const reference = await Reference.findByIdAndDelete(req.params.id);
-        if (!reference) return res.status(404).json({ message: 'Reference not found' });
-        res.json({ message: 'Reference removed' });
+        await query('DELETE FROM references_list WHERE id = $1', [req.params.id]);
+        res.json({ message: 'Reference deleted successfully' });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        next(err);
     }
 });
 

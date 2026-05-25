@@ -183,7 +183,6 @@
     </div>
 
     <script>
-        const API_URL = '/api';
         const urlParams = new URLSearchParams(window.location.search);
         const leadId = urlParams.get('id');
 
@@ -198,14 +197,10 @@
             }
 
             try {
-                // If Agent, only fetch their own leads to ensure search finds nothing if restricted
-                let url = `${API_URL}/leads`;
+                let leads = JSON.parse(localStorage.getItem('mockDB_leads') || '[]');
                 if (role !== 'Admin') {
-                    url += `?referredBy=${encodeURIComponent(currentName)}`;
+                    leads = leads.filter(l => l.referredBy === currentName);
                 }
-
-                const res = await fetch(url);
-                const leads = await res.json();
                 const lead = leads.find(l => l._id == leadId);
 
                 if (!lead) {
@@ -268,7 +263,7 @@
 
         loadApplication();
     </script>
-<script src="js/chatbot.js"></script>
+<script src="chatbot.js"></script>
 </body>
 
 </html>

@@ -1,97 +1,107 @@
 const express = require('express');
-const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const { query, getOne } = require('../config/db');
+const { requireAuth } = require('../middleware/auth');
 
-// Register User (Admin or Agent)
-router.post('/register', async (req, res) => {
-    const { name, email, password, role } = req.body;
+const router = express.Router();
+
+function publicUser(row) {
+    return {
+        _id: String(row.id),
+        name: row.name,
+        email: row.email,
+        role: row.role,
+        createdAt: row.created_at
+    };
+}
+
+async function ensureDefaultAdmin() {
+    const email = process.env.ADMIN_EMAIL;
+    const password = process.env.ADMIN_PASSWORD;
+    if (!email || !password) return;
+
+    const existing = await getOne('SELECT id FROM admins WHERE email = $1 LIMIT 1', [email]);
+    if (existing) return;
+
+    const hash = await bcrypt.hash(password, 10);
+    await query(
+        'INSERT INTO admins (name, email, password_hash, role) VALUES ($1, $2, $3, $4)',
+        ['Admin', email, hash, 'Admin']
+    );
+}
+
+router.post('/login', async (req, res, next) => {
     try {
-        let user = await User.findOne({ email });
-        if (user) return res.status(400).json({ message: 'User already exists' });
-
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
-
-        user = new User({ name, email, password: hashedPassword, role });
-        await user.save();
-
-        res.status(201).json({ message: 'User registered successfully' });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// Login User
-router.post('/login', async (req, res) => {
-    const { email, password } = req.body;
-    try {
-        const user = await User.findOne({ email });
+        await ensureDefaultAdmin();
+        const { email, password } = req.body;
+        const user = await getOne('SELECT * FROM admins WHERE email = $1 LIMIT 1', [email]);
         if (!user) return res.status(400).json({ message: 'Invalid credentials' });
 
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
+        const ok = await bcrypt.compare(password, user.password_hash);
+        if (!ok) return res.status(400).json({ message: 'Invalid credentials' });
 
-        const payload = { user: { id: user.id, role: user.role, name: user.name } };
-        const token = jwt.sign(payload, process.env.JWT_SECRET || 'secret123', { expiresIn: '1d' });
+        const token = jwt.sign(
+            { id: user.id, email: user.email, role: user.role, name: user.name },
+            process.env.JWT_SECRET || 'change-me',
+            { expiresIn: '1d' }
+        );
 
-        res.json({ token, role: user.role, name: user.name });
+        res.json({ token, role: user.role, name: user.name || user.email });
     } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-// Get all users (Agents and Admins)
-router.get('/users', async (req, res) => {
-    try {
-        const users = await User.find();
-        res.json(users);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+        next(err);
     }
 });
 
-// Delete user (Access Denied / Deletion)
-router.delete('/users/:id', async (req, res) => {
+router.post('/register', requireAuth, async (req, res, next) => {
     try {
-        const user = await User.findByIdAndDelete(req.params.id);
-        if (!user) return res.status(404).json({ message: 'User not found' });
+        const { name, email, password, role } = req.body;
+        const existing = await getOne('SELECT id FROM admins WHERE email = $1 LIMIT 1', [email]);
+        if (existing) return res.status(400).json({ message: 'Email already exists' });
+
+        const hash = await bcrypt.hash(password, 10);
+        await query(
+            'INSERT INTO admins (name, email, password_hash, role) VALUES ($1, $2, $3, $4)',
+            [name, email, hash, role || 'Admin']
+        );
+        res.status(201).json({ message: 'User registered successfully' });
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.get('/users', requireAuth, async (req, res, next) => {
+    try {
+        const users = await query('SELECT id, name, email, role, created_at FROM admins ORDER BY created_at DESC');
+        res.json(users.map(publicUser));
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.delete('/users/:id', requireAuth, async (req, res, next) => {
+    try {
+        await query('DELETE FROM admins WHERE id = $1', [req.params.id]);
         res.json({ message: 'User removed access / deleted' });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        next(err);
     }
 });
 
-// Change Password
-router.post('/change-password', async (req, res) => {
+router.post('/change-password', requireAuth, async (req, res, next) => {
     try {
-        const authHeader = req.headers['authorization'];
-        const token = authHeader && authHeader.split(' ')[1];
-        if (!token) return res.status(401).json({ message: 'No token provided' });
-
-        let decoded;
-        try {
-            decoded = require('jsonwebtoken').verify(token, process.env.JWT_SECRET || 'secret123');
-        } catch {
-            return res.status(401).json({ message: 'Invalid or expired token' });
-        }
-
-        const userId = decoded.user?.id || decoded.user?._id;
-        const user = await User.findById(userId);
+        const { currentPassword, newPassword } = req.body;
+        const user = await getOne('SELECT * FROM admins WHERE id = $1 LIMIT 1', [req.user.id]);
         if (!user) return res.status(404).json({ message: 'User not found' });
 
-        const { currentPassword, newPassword } = req.body;
+        const ok = await bcrypt.compare(currentPassword, user.password_hash);
+        if (!ok) return res.status(400).json({ message: 'Current password is incorrect' });
 
-        const isMatch = await bcrypt.compare(currentPassword, user.password);
-        if (!isMatch) return res.status(400).json({ message: 'Current password is incorrect' });
-
-        const salt = await bcrypt.genSalt(10);
-        const hashedNew = await bcrypt.hash(newPassword, salt);
-        await User.findByIdAndUpdatePassword(userId, hashedNew);
-
+        const hash = await bcrypt.hash(newPassword, 10);
+        await query('UPDATE admins SET password_hash = $1, updated_at = NOW() WHERE id = $2', [hash, req.user.id]);
         res.json({ message: 'Password updated successfully' });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        next(err);
     }
 });
 

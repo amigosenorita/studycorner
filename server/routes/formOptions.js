@@ -1,39 +1,46 @@
 const express = require('express');
+const { query } = require('../config/db');
+const { requireAuth } = require('../middleware/auth');
+
 const router = express.Router();
-const FormOption = require('../models/FormOption');
 
-// Get all options for a specific category
-router.get('/:category', async (req, res) => {
+function mapRow(row) {
+    return { _id: String(row.id), category: row.category, value: row.value };
+}
+
+router.get('/', async (req, res, next) => {
     try {
-        const options = await FormOption.find({ category: req.params.category });
-        res.json(options);
+        const rows = await query('SELECT id, category, value FROM form_options ORDER BY category ASC, value ASC');
+        res.json(rows.map(mapRow));
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        next(err);
     }
 });
 
-// Add a new option
-router.post('/', async (req, res) => {
+router.get('/:category', async (req, res, next) => {
     try {
-        const { category, value } = req.body;
-        if (!category || !value) return res.status(400).json({ message: 'Category and value are required' });
-        const option = new FormOption({ category, value });
-        await option.save();
-        console.log(`[FormOption] Added: ${category} -> ${value}`);
-        res.status(201).json(option);
+        const rows = await query('SELECT id, category, value FROM form_options WHERE category = $1 ORDER BY value ASC', [req.params.category]);
+        res.json(rows.map(mapRow));
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        next(err);
     }
 });
 
-// Delete an option
-router.delete('/:id', async (req, res) => {
+router.post('/', requireAuth, async (req, res, next) => {
     try {
-        const option = await FormOption.findByIdAndDelete(req.params.id);
-        if (!option) return res.status(404).json({ message: 'Option not found' });
-        res.json({ message: 'Option removed' });
+        await query('INSERT INTO form_options (category, value) VALUES ($1, $2) ON CONFLICT (category, value) DO NOTHING', [req.body.category, req.body.value]);
+        res.status(201).json({ message: 'Option added successfully' });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        next(err);
+    }
+});
+
+router.delete('/:id', requireAuth, async (req, res, next) => {
+    try {
+        await query('DELETE FROM form_options WHERE id = $1', [req.params.id]);
+        res.json({ message: 'Option deleted successfully' });
+    } catch (err) {
+        next(err);
     }
 });
 

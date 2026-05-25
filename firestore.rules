@@ -1,0 +1,81 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    function validLead() {
+      return request.resource.data.keys().hasOnly([
+        'studentName',
+        'dob',
+        'gender',
+        'aadhaar',
+        'mobile',
+        'altMobile',
+        'email',
+        'address',
+        'bloodGroup',
+        'maritalStatus',
+        'religion',
+        'nationality',
+        'community',
+        'subCaste',
+        'motherTongue',
+        'firstGraduate',
+        'tenthPercent',
+        'twelfthPercent',
+        'preferredCourse',
+        'preferredCollege',
+        'program',
+        'branch',
+        'referredBy',
+        'studentPhotoUrl',
+        'aadhaarPhotoUrl',
+        'tenthMarksheetPhotoUrl',
+        'twelfthMarksheetPhotoUrl',
+        'status',
+        'createdAt',
+        'updatedAt'
+      ])
+      && request.resource.data.studentName is string
+      && request.resource.data.mobile is string
+      && request.resource.data.aadhaar.matches('^[0-9]{12}$');
+    }
+
+    match /publicSettings/{document} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /formOptions/{document} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /references/{document} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /leads/{leadId} {
+      allow create: if validLead();
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /admins/{uid} {
+      allow read: if signedIn() && request.auth.uid == uid;
+      allow create, update, delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

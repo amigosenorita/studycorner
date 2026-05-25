@@ -1,0 +1,228 @@
+/* GLOBAL SETTINGS */
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+font-family:'Segoe UI', sans-serif;
+overflow-x:hidden;
+line-height:1.6;
+background:#ffffff;
+}
+
+/* CONTAINER */
+
+.container{
+width:90%;
+max-width:1200px;
+margin:auto;
+}
+
+/* LOGO BOX */
+
+.logo-box{
+background:white;
+padding:6px;
+border-radius:6px;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+.logo-box img{
+max-height:45px;
+width:auto;
+}
+
+/* =========================
+GALLERY SECTION
+========================= */
+
+.gallery-container{
+padding:40px 0;
+background:#f8fafc;
+}
+
+.gallery-row{
+display:flex;
+gap:20px;
+overflow:hidden;
+}
+
+.slider{
+flex:1;
+height:260px;
+overflow:hidden;
+border-radius:10px;
+}
+
+.slides{
+display:flex;
+width:max-content;
+}
+
+.slide{
+min-width:300px;
+margin-right:20px;
+}
+
+.slide img{
+width:100%;
+height:260px;
+object-fit:cover;
+border-radius:10px;
+}
+
+/* =========================
+AUTO SLIDE ANIMATION
+========================= */
+
+.slide-left{
+animation:slideLeft 25s linear infinite;
+}
+
+.slide-right{
+animation:slideRight 25s linear infinite;
+}
+
+@keyframes slideLeft{
+0%{ transform:translateX(0); }
+100%{ transform:translateX(-50%); }
+}
+
+@keyframes slideRight{
+0%{ transform:translateX(-50%); }
+100%{ transform:translateX(0); }
+}
+
+/* =========================
+LOGO SLIDER
+========================= */
+
+.logo-slider{
+overflow:hidden;
+padding:30px 0;
+background:#fff;
+}
+
+.logo-track{
+display:flex;
+gap:60px;
+animation:logoScroll 20s linear infinite;
+align-items:center;
+}
+
+.logo-track img{
+height:60px;
+width:auto;
+transition:0.3s;
+}
+
+.logo-track img:hover{
+filter:none;
+transform:scale(1.1);
+}
+
+@keyframes logoScroll{
+0%{ transform:translateX(0); }
+100%{ transform:translateX(-50%); }
+}
+
+/* =========================
+TABLET RESPONSIVE
+========================= */
+
+@media (max-width:1024px){
+
+.gallery-row{
+gap:15px;
+}
+
+.slider{
+height:220px;
+}
+
+.slide{
+min-width:250px;
+}
+
+.slide img{
+height:220px;
+}
+
+.logo-track{
+gap:40px;
+}
+
+.logo-track img{
+height:50px;
+}
+
+}
+
+/* =========================
+MOBILE RESPONSIVE
+========================= */
+
+@media (max-width:768px){
+
+.gallery-row{
+flex-direction:column;
+}
+
+.slider{
+height:200px;
+}
+
+.slide{
+min-width:220px;
+}
+
+.slide img{
+height:200px;
+}
+
+.logo-box img{
+max-height:35px;
+}
+
+.logo-track{
+gap:30px;
+}
+
+.logo-track img{
+height:40px;
+}
+
+}
+
+/* =========================
+SMALL MOBILE
+========================= */
+
+@media (max-width:480px){
+
+.container{
+width:95%;
+}
+
+.slider{
+height:180px;
+}
+
+.slide{
+min-width:200px;
+}
+
+.slide img{
+height:180px;
+}
+
+.logo-track img{
+height:35px;
+}
+
+}
